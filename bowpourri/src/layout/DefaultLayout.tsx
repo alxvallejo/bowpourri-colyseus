@@ -1,67 +1,9 @@
 import { useEffect, useState } from 'react';
-import { themeChange } from 'theme-change';
-import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
-import { Form, Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
-
-// import { requireUserId } from '~/session.server';
-import { useUser } from '~/utils';
-// import { getNoteListItems } from '~/models/note.server';
-import io, { Socket } from 'socket.io-client';
-import { DefaultEventsMap } from 'socket.io/dist/typed-events';
-import { themeList } from '~/styles/themes';
-
-export async function loader({ request }: LoaderArgs) {
-    // const userId = await requireUserId(request);
-    // const noteListItems = await getNoteListItems({ userId });
-    const wsUrl = process.env.WEBSOCKET_API || 'http://localhost:4000';
-    return json({ wsUrl });
-}
+import { Link, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthProvider';
 
 export default function Layout() {
-    const { wsUrl } = useLoaderData<typeof loader>();
-    const [currentTheme, setCurrentTheme] = useState('');
-    let [socket, setSocket] =
-        useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
-    const user = useUser();
-
-    useEffect(() => {
-        themeChange(false);
-        const savedTheme = window.localStorage.getItem('theme');
-        if (savedTheme) {
-            const body = document.body;
-            body.setAttribute('data-theme', savedTheme);
-            setCurrentTheme(savedTheme);
-        }
-        let connection = io.connect(wsUrl);
-        setSocket(connection);
-
-        return () => {
-            connection.close();
-        };
-    }, []);
-
-    const handleThemeChange = (theme: string) => {
-        const body = document.body;
-        body.setAttribute('data-theme', theme);
-        window.localStorage.setItem('theme', theme);
-        setCurrentTheme(theme);
-    };
-
-    const themeRowClass = (theme): string => {
-        const isActive = currentTheme && currentTheme === theme;
-        return isActive ? `btn-ghost btn active` : `btn-ghost btn`;
-    };
-
-    const ThemeListItem = ({ theme }) => {
-        return (
-            <li onClick={() => handleThemeChange(theme.value)}>
-                <button className={themeRowClass(theme.value)}>
-                    {theme.label}
-                </button>
-            </li>
-        );
-    };
+    const { user, signOut } = useAuth();
 
     return (
         <div className='flex h-full min-h-screen flex-col'>
@@ -126,37 +68,14 @@ export default function Layout() {
                 <div className='navbar-end'>
                     <div className='flex flex-1 justify-end px-2'>
                         <div className='flex items-center'>
-                            <div>{user.name || user.email}</div>
-
-                            <div className='dropdown dropdown-end m-3'>
-                                <label
-                                    tabIndex={0}
-                                    className='btn-ghost rounded-btn btn lowercase'
-                                >
-                                    Theme
-                                </label>
-                                <ul
-                                    tabIndex={0}
-                                    className='dropdown-content menu rounded-box mt-4 w-52 bg-base-100 p-2 z-50'
-                                >
-                                    {themeList.map((theme, i) => {
-                                        return (
-                                            <ThemeListItem
-                                                key={i}
-                                                theme={theme}
-                                            />
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                            <Form action='/logout' method='post'>
-                                <button
-                                    type='submit'
-                                    className='rounded py-2 px-4'
-                                >
-                                    Logout
-                                </button>
-                            </Form>
+                            <div>{user?.name || user?.email}</div>
+                            <button
+                                type='submit'
+                                className='rounded py-2 px-4'
+                                onClick={() => signOut()}
+                            >
+                                Logout
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -164,7 +83,8 @@ export default function Layout() {
 
             <main className='flex h-full md:mt-32 mt-16'>
                 <div className='w-full flex-1 p-6'>
-                    {!socket ? `Connecting` : <Outlet context={{ socket }} />}
+                    {/* {!socket ? `Connecting` : <Outlet context={{ socket }} />} */}
+                    <Outlet />
                 </div>
             </main>
         </div>

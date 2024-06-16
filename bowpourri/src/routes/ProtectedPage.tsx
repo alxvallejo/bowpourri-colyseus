@@ -1,16 +1,12 @@
 import { Navigate } from 'react-router-dom';
-import Layout from '~/layout/DefaultLayout';
-import { useAuth } from '~/context/AuthProvider';
+import Layout from '../layout/DefaultLayout';
+import { useAuth } from '../context/AuthProvider';
 
 const ProtectedPage = () => {
-    const { user, expiry, signOut } = useAuth();
-    if (!user || !expiry) {
-        signOut();
-        return <Navigate to='/login' replace />;
-    }
+    const { user } = useAuth();
+    console.log('user at ProtectedPage: ', user);
 
-    if (expiry && new Date(expiry) < new Date()) {
-        signOut();
+    if (!user) {
         return <Navigate to='/login' replace />;
     }
 

@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react';
 import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Root from './routes/Root';
-import { createClient } from '@supabase/supabase-js';
 import Login from './routes/Login';
-
-const supabase = createClient(
-    import.meta.env.VITE_SUPABASE_URL,
-    import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+import ProtectedPage from './routes/ProtectedPage';
+import AuthProvider from './context/AuthProvider';
 
 const router = createBrowserRouter([
     {
@@ -20,32 +15,24 @@ const router = createBrowserRouter([
                 element: <Login />,
             },
             {
-                path: '',
+                path: '/',
+                element: <ProtectedPage />,
+                children: [
+                    {
+                        // path: 'some-protected-path',
+                    },
+                ],
             },
         ],
     },
 ]);
 
 function App() {
-    const [session, setSession] = useState(null);
-
-    useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session);
-        });
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
-
     return (
         <>
-            <RouterProvider router={router} />
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>
         </>
     );
 }
