@@ -4,6 +4,7 @@ import Root from './routes/Root';
 import Login from './routes/Login';
 import ProtectedPage from './routes/ProtectedPage';
 import AuthProvider from './context/AuthProvider';
+import Trivia from './routes/Trivia';
 
 const router = createBrowserRouter([
     {
@@ -19,7 +20,8 @@ const router = createBrowserRouter([
                 element: <ProtectedPage />,
                 children: [
                     {
-                        // path: 'some-protected-path',
+                        path: 'trivia',
+                        element: <Trivia />,
                     },
                 ],
             },

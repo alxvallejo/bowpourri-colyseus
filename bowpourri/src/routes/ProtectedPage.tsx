@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthProvider';
 
 const ProtectedPage = () => {
     const { user } = useAuth();
-    console.log('user at ProtectedPage: ', user);
 
     if (!user) {
         return <Navigate to='/login' replace />;
