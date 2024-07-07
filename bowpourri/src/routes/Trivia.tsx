@@ -11,14 +11,15 @@ export default function Trivia() {
             .eq('id', user?.id);
         console.log('data: ', data);
         console.log('error: ', error);
-        return { data, error };
+
+        // return { data, error };
     };
 
     useEffect(() => {
         if (user) {
             getProfile();
         }
-    }, []);
+    }, [user]);
 
     return <div>Trivia</div>;
 }
