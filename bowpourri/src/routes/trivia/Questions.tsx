@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../../context/AuthProvider';
-import { useForm, Controller, set } from 'react-hook-form';
-import { Form, Link } from 'react-router-dom';
-import { CheckboxInput, TextInput } from '../../common/form';
+import { Link } from 'react-router-dom';
+import dayjs from 'dayjs';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+dayjs.extend(localizedFormat);
 
 export default function Questions() {
     const { user } = useAuth();
@@ -31,8 +32,8 @@ export default function Questions() {
                 <thead>
                     <tr>
                         <th>Question</th>
-                        <th>Answer</th>
                         <th>Answered On</th>
+                        <th>Created At</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -40,8 +41,8 @@ export default function Questions() {
                     {questions.map((question) => (
                         <tr key={question.id} className='hover'>
                             <td>{question.question}</td>
-                            <td>{question.answer}</td>
-                            <td>{question.created_at}</td>
+                            <td>{question.answered_on}</td>
+                            <td>{dayjs(question.created_at).format('l')}</td>
                             <td>
                                 <Link
                                     to={`edit/${question.id}`}
