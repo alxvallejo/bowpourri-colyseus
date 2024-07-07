@@ -5,6 +5,8 @@ import Login from './routes/Login';
 import ProtectedPage from './routes/ProtectedPage';
 import AuthProvider from './context/AuthProvider';
 import Trivia from './routes/Trivia';
+import NewQuestion from './routes/trivia/NewQuestion';
+import Questions from './routes/trivia/Questions';
 
 const router = createBrowserRouter([
     {
@@ -22,6 +24,20 @@ const router = createBrowserRouter([
                     {
                         path: 'trivia',
                         element: <Trivia />,
+                        children: [
+                            {
+                                path: '',
+                                element: <Questions />,
+                            },
+                            {
+                                path: 'edit/:id',
+                                element: <NewQuestion />,
+                            },
+                            {
+                                path: 'new',
+                                element: <NewQuestion />,
+                            },
+                        ],
                     },
                 ],
             },
