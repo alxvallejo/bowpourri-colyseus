@@ -21,5 +21,9 @@ export default function Trivia() {
         }
     }, [user]);
 
-    return <div>Trivia</div>;
+    return (
+        <div>
+            <h1>Trivia</h1>
+        </div>
+    );
 }

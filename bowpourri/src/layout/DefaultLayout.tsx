@@ -33,8 +33,8 @@ export default function Layout() {
                 </div>
             </div>
 
-            <main className='flex h-full md:mt-32 mt-16'>
-                <div className='w-full flex-1 p-6'>
+            <main className='flex h-full mt-16'>
+                <div className='w-full flex-1'>
                     {/* {!socket ? `Connecting` : <Outlet context={{ socket }} />} */}
                     <div className='drawer lg:drawer-open'>
                         <input
@@ -42,7 +42,7 @@ export default function Layout() {
                             type='checkbox'
                             className='drawer-toggle'
                         />
-                        <div className='drawer-content flex flex-col items-center justify-center'>
+                        <div className='drawer-content flex flex-col justify-top prose m-6'>
                             {/* Page content here */}
                             <label
                                 htmlFor='my-drawer-2'
@@ -50,6 +50,7 @@ export default function Layout() {
                             >
                                 Open drawer
                             </label>
+                            <Outlet />
                         </div>
                         <div className='drawer-side'>
                             <label
@@ -68,7 +69,6 @@ export default function Layout() {
                             </ul>
                         </div>
                     </div>
-                    <Outlet />
                 </div>
             </main>
         </div>
