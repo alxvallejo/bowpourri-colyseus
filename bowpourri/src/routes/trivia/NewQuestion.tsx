@@ -35,6 +35,7 @@ export default function NewQuestion() {
                 .update([
                     {
                         ...data,
+                        email: user?.email,
                     },
                 ])
                 .eq('id', state.id);
@@ -44,6 +45,7 @@ export default function NewQuestion() {
                 .insert([
                     {
                         ...data,
+                        email: user?.email,
                     },
                 ]);
         }
