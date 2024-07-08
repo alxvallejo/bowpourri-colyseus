@@ -1,8 +1,37 @@
 import { Link, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthProvider';
+import { supabase, useAuth } from '../context/AuthProvider';
+
+import * as Colyseus from 'colyseus.js';
+import { useEffect, useState } from 'react';
+const client = new Colyseus.Client('ws://localhost:2567');
 
 export default function Layout() {
     const { user, signOut } = useAuth();
+    const [profile, setProfile] = useState(null);
+
+    const getProfile = async () => {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select()
+            .eq('id', user?.id);
+        setProfile(data[0]);
+    };
+
+    useEffect(() => {
+        if (user && !profile) {
+            getProfile();
+        }
+        if (user && profile) {
+            client
+                .joinOrCreate('trivia', { profile })
+                .then((room) => {
+                    console.log(room.sessionId, 'joined', room.name);
+                })
+                .catch((e) => {
+                    console.log('JOIN ERROR', e);
+                });
+        }
+    }, [user, profile]);
 
     return (
         <div className='flex h-full min-h-screen flex-col'>

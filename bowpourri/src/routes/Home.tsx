@@ -16,10 +16,10 @@ export default function Trivia() {
     };
 
     useEffect(() => {
-        if (user) {
+        if (user && !profile) {
             getProfile();
         }
-    }, [user]);
+    }, [user, profile]);
 
     return (
         <div>

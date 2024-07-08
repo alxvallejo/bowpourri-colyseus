@@ -13,10 +13,6 @@ export default function Questions() {
         const { data, error } = await supabase
             .from('trivia_questions')
             .select();
-        console.log('data: ', data);
-        console.log('error: ', error);
-
-        // return { data, error };
         setQuestions(data);
     };
 
