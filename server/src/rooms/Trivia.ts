@@ -27,7 +27,7 @@ export class Trivia extends Room<TriviaState> {
         player.id = client.sessionId;
         player.name = profile.name;
         player.email = profile.email;
-        player.created_at = new Date().toISOString();
+        player.joined_at = new Date().toISOString();
         player.score = profile.score;
         this.state.players.set(client.sessionId, player);
 
@@ -37,7 +37,12 @@ export class Trivia extends Room<TriviaState> {
 
         console.log(client.sessionId, 'joined!');
 
+        // Copy players to wheel
+        this.state.wheel = new MapSchema<Player>(this.state.players);
+
         this.broadcast('players', this.state.players);
+        this.broadcast('wheel', this.state.wheel);
+        this.broadcast('currentPlayer', this.state.currentPlayer);
     }
 
     onLeave(client: Client, consented: boolean) {

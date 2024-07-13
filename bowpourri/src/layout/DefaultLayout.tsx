@@ -87,7 +87,7 @@ export default function Layout() {
                             >
                                 Open drawer
                             </label>
-                            <Outlet context={trivia} />
+                            <Outlet context={{ trivia }} />
                         </div>
                         <div className='drawer-side'>
                             <label
@@ -96,16 +96,13 @@ export default function Layout() {
                                 className='drawer-overlay'
                             ></label>
                             <div className='min-h-full p-4 w-80  bg-base-200 text-base-content'>
-                                <ul className='menu '>
+                                <ul className='menu'>
                                     {/* Sidebar content here */}
                                     <li>
                                         <Link to='/'>Home</Link>
                                     </li>
                                     <li>
                                         <Link to='/trivia'>Trivia</Link>
-                                    </li>
-                                    <li>
-                                        <a>Sidebar Item 2</a>
                                     </li>
                                     <li className='align-bottom'>
                                         <a>Sign out</a>
@@ -114,7 +111,7 @@ export default function Layout() {
 
                                 <div className='overflow-x-auto'>
                                     <h2 className='text-2xl font-bold text-center'>
-                                        Players
+                                        Scoreboard
                                     </h2>
                                     <table className='table'>
                                         {/* head */}
