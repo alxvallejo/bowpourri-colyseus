@@ -15,6 +15,14 @@ export class Trivia extends Room<TriviaState> {
 
     onJoin(client: Client, options: any) {
         const { profile } = options;
+        // Check if player already exists by email
+        const existingPlayer = Array.from(this.state.players.values()).find(
+            (player) => player.email === profile.email
+        );
+        if (existingPlayer) {
+            // Update player's score
+            this.state.players.delete(existingPlayer.id);
+        }
         const player = new Player();
         player.id = client.sessionId;
         player.name = profile.name;
@@ -30,7 +38,6 @@ export class Trivia extends Room<TriviaState> {
         console.log(client.sessionId, 'joined!');
 
         this.broadcast('players', this.state.players);
-        this.broadcast('currentPlayer', this.state.currentPlayer);
     }
 
     onLeave(client: Client, consented: boolean) {

@@ -8,6 +8,8 @@ const client = new Colyseus.Client('ws://localhost:2567');
 export default function Layout() {
     const { user, signOut } = useAuth();
     const [profile, setProfile] = useState(null);
+    const [trivia, setTrivia] = useState(null);
+    const [players, setPlayers] = useState([]);
 
     const getProfile = async () => {
         const { data, error } = await supabase
@@ -26,6 +28,12 @@ export default function Layout() {
                 .joinOrCreate('trivia', { profile })
                 .then((room) => {
                     console.log(room.sessionId, 'joined', room.name);
+                    setTrivia(room);
+
+                    room.onMessage('players', (state) => {
+                        console.log('initial room state:', state);
+                        setPlayers(Object.values(state));
+                    });
                 })
                 .catch((e) => {
                     console.log('JOIN ERROR', e);
@@ -79,7 +87,7 @@ export default function Layout() {
                             >
                                 Open drawer
                             </label>
-                            <Outlet />
+                            <Outlet context={trivia} />
                         </div>
                         <div className='drawer-side'>
                             <label
@@ -87,18 +95,46 @@ export default function Layout() {
                                 aria-label='close sidebar'
                                 className='drawer-overlay'
                             ></label>
-                            <ul className='menu p-4 w-80 min-h-full bg-base-200 text-base-content'>
-                                {/* Sidebar content here */}
-                                <li>
-                                    <Link to='/'>Home</Link>
-                                </li>
-                                <li>
-                                    <Link to='/trivia'>Trivia</Link>
-                                </li>
-                                <li>
-                                    <a>Sidebar Item 2</a>
-                                </li>
-                            </ul>
+                            <div className='min-h-full p-4 w-80  bg-base-200 text-base-content'>
+                                <ul className='menu '>
+                                    {/* Sidebar content here */}
+                                    <li>
+                                        <Link to='/'>Home</Link>
+                                    </li>
+                                    <li>
+                                        <Link to='/trivia'>Trivia</Link>
+                                    </li>
+                                    <li>
+                                        <a>Sidebar Item 2</a>
+                                    </li>
+                                    <li className='align-bottom'>
+                                        <a>Sign out</a>
+                                    </li>
+                                </ul>
+
+                                <div className='overflow-x-auto'>
+                                    <h2 className='text-2xl font-bold text-center'>
+                                        Players
+                                    </h2>
+                                    <table className='table'>
+                                        {/* head */}
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {players.map((player, index) => (
+                                                <tr key={index}>
+                                                    <td>{player.name}</td>
+                                                    <td>{player.score}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
