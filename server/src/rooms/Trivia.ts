@@ -1,15 +1,35 @@
 import { Room, Client } from '@colyseus/core';
 import { Player, TriviaState } from './schema/TriviaState';
 import { Schema, MapSchema, type } from '@colyseus/schema';
+import { getRandomTriviaQuestion } from '../services/trivia';
 
 export class Trivia extends Room<TriviaState> {
     onCreate(options: any) {
         this.setState(new TriviaState());
 
-        this.onMessage('type', (client, message) => {
-            //
-            // handle "type" message
-            //
+        this.onMessage('spin', async (client, message) => {
+            console.log('spin', client.sessionId);
+            // Remove current player from wheel
+            this.state.wheel.delete(this.state.currentPlayer.id);
+            // Broadcast wheel
+            this.broadcast('wheel', this.state.wheel);
+            // Select random player from wheel
+            const players = Array.from(this.state.wheel.values());
+            if (players.length === 0) {
+                // Kick off bowpourri
+                const randomQuestion = await getRandomTriviaQuestion();
+                console.log('randomQuestion: ', randomQuestion);
+                // Broadcast bowpourri
+                this.broadcast('bowpourri', randomQuestion);
+                this.broadcast('currentPlayer', null);
+            } else {
+                const randomPlayer =
+                    players[Math.floor(Math.random() * players.length)];
+                // Set current player
+                this.state.currentPlayer = randomPlayer;
+                // Broadcast current player
+                this.broadcast('currentPlayer', this.state.currentPlayer);
+            }
         });
     }
 
@@ -51,5 +71,7 @@ export class Trivia extends Room<TriviaState> {
 
     onDispose() {
         console.log('room', this.roomId, 'disposing...');
+        // Reset state
+        this.setState(new TriviaState());
     }
 }

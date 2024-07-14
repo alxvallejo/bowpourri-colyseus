@@ -10,6 +10,9 @@ export default function Layout() {
     const [profile, setProfile] = useState(null);
     const [trivia, setTrivia] = useState(null);
     const [players, setPlayers] = useState([]);
+    const [currentPlayer, setCurrentPlayer] = useState(null);
+    const [wheel, setWheel] = useState([]);
+    const [bowpourri, setBowpourri] = useState(null);
 
     const getProfile = async () => {
         const { data, error } = await supabase
@@ -33,6 +36,21 @@ export default function Layout() {
                     room.onMessage('players', (state) => {
                         console.log('initial room state:', state);
                         setPlayers(Object.values(state));
+                    });
+
+                    room.onMessage('wheel', (state) => {
+                        console.log('initial room state:', state);
+                        setWheel(Object.values(state));
+                    });
+
+                    room.onMessage('currentPlayer', (state) => {
+                        console.log('currentPlayer:', state);
+                        setCurrentPlayer(state);
+                    });
+
+                    room.onMessage('bowpourri', (state) => {
+                        console.log('bowpourri:', state);
+                        setBowpourri(state);
                     });
                 })
                 .catch((e) => {
@@ -87,7 +105,14 @@ export default function Layout() {
                             >
                                 Open drawer
                             </label>
-                            <Outlet context={{ trivia }} />
+                            <Outlet
+                                context={{
+                                    trivia,
+                                    bowpourri,
+                                    wheel,
+                                    currentPlayer,
+                                }}
+                            />
                         </div>
                         <div className='drawer-side'>
                             <label
@@ -108,6 +133,27 @@ export default function Layout() {
                                         <a>Sign out</a>
                                     </li>
                                 </ul>
+
+                                <div className='overflow-x-auto'>
+                                    <h2 className='text-2xl font-bold text-center'>
+                                        Wheel
+                                    </h2>
+                                    <table className='table'>
+                                        {/* head */}
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {wheel.map((player, index) => (
+                                                <tr key={index}>
+                                                    <td>{player.name}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <div className='overflow-x-auto'>
                                     <h2 className='text-2xl font-bold text-center'>

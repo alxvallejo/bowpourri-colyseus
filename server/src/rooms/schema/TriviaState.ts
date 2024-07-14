@@ -32,4 +32,7 @@ export class TriviaState extends Schema {
 
     @type(Player)
     currentPlayer: Player;
+
+    @type('boolean')
+    bowpourri: boolean;
 }
