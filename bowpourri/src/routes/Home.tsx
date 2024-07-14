@@ -17,6 +17,7 @@ export default function Trivia() {
     const { trivia, bowpourri, wheel, currentPlayer } = useOutletContext();
     const [spun, setSpun] = useState(false);
     const [options, setOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
 
     const getProfile = async () => {
         const { data, error } = await supabase
@@ -76,10 +77,22 @@ export default function Trivia() {
                 <div className='shadow p-4'>
                     <h2>Bowpourri</h2>
                     <p>{bowpourri.question}</p>
-                    <ul>
-                        {options.map((option, i) => (
-                            <li key={i}>{option}</li>
-                        ))}
+                    <ul className='flex flex-col'>
+                        {options.map((option, i) => {
+                            const selected = selectedOption === option;
+                            const classname = selected
+                                ? 'btn-primary'
+                                : 'btn-info';
+                            return (
+                                <button
+                                    className={classname}
+                                    key={i}
+                                    onClick={() => setSelectedOption(option)}
+                                >
+                                    {option}
+                                </button>
+                            );
+                        })}
                     </ul>
                 </div>
             ) : yourTurn ? (

@@ -65,8 +65,8 @@ export default function Layout() {
                 <div className='navbar-start'>
                     <Link to='.'>
                         <div className='font-title inline-flex text-lg text-primary transition-all duration-200 md:text-3xl'>
-                            <span className='lowercase'>Bowst</span>{' '}
-                            <span className='font-bold text-base-content'>
+                            <span className='logo'>Bowst</span>{' '}
+                            <span className='font-bold text-base-content ml-4'>
                                 Standup
                             </span>
                         </div>
