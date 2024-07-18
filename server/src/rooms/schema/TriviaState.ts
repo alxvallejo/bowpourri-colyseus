@@ -23,6 +23,40 @@ export class Player extends Schema {
     isCorrect: boolean;
 }
 
+export class PlayerAnswer extends Schema {
+    @type('string')
+    id: string;
+
+    @type('string')
+    answer: string;
+}
+
+export class Question extends Schema {
+    @type('number')
+    id: number;
+
+    @type('string')
+    question: string;
+
+    @type('string')
+    option_1: string;
+
+    @type('string')
+    option_2: string;
+
+    @type('string')
+    option_3: string;
+
+    @type('string')
+    option_4: string;
+
+    @type('string')
+    email: string;
+
+    @type('string')
+    answer: string;
+}
+
 export class TriviaState extends Schema {
     @type({ map: Player })
     players = new MapSchema<Player>();
@@ -33,6 +67,12 @@ export class TriviaState extends Schema {
     @type(Player)
     currentPlayer: Player;
 
-    @type('boolean')
-    bowpourri: boolean;
+    @type(Question)
+    bowpourri: Question;
+
+    @type('string')
+    answer: string;
+
+    @type({ map: PlayerAnswer })
+    answers = new MapSchema<PlayerAnswer>();
 }

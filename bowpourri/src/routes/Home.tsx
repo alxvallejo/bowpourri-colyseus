@@ -14,7 +14,8 @@ function shuffleArray(array) {
 export default function Trivia() {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
-    const { trivia, bowpourri, wheel, currentPlayer } = useOutletContext();
+    const { trivia, bowpourri, wheel, currentPlayer, counter, playerScores } =
+        useOutletContext();
     const [spun, setSpun] = useState(false);
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -48,6 +49,18 @@ export default function Trivia() {
         }
     }, [bowpourri]);
 
+    useEffect(() => {
+        if (selectedOption) {
+            console.log('sending answer: ', selectedOption);
+            trivia.send('answer', selectedOption);
+        }
+    }, [selectedOption, trivia]);
+
+    useEffect(() => {
+        if (playerScores?.congratsTo) {
+        }
+    });
+
     const spinWheel = () => {
         if (spun) return;
         console.log('spinning wheel');
@@ -60,15 +73,19 @@ export default function Trivia() {
 
     console.log('bowpourri: ', bowpourri);
 
+    console.log('playerScores?.congratsTo', playerScores?.congratsTo);
+
     return (
         <div>
-            <h1>Welcome, {profile?.name}</h1>
+            <h4>Welcome, {profile?.name}</h4>
             {!yourTurn && <h3>Prepare for standup...</h3>}
 
-            <textarea
-                className='textarea textarea-info textarea-lg w-full max-w-xs'
-                placeholder='What did you do yesterday?'
-            ></textarea>
+            <div className='flex w-auto'>
+                <textarea
+                    className='textarea textarea-info textarea-lg w-full max-w-xs'
+                    placeholder='What did you do yesterday?'
+                ></textarea>
+            </div>
             <nav>
                 <Link to='trivia'>Add a trivia question!</Link>
             </nav>
@@ -81,8 +98,8 @@ export default function Trivia() {
                         {options.map((option, i) => {
                             const selected = selectedOption === option;
                             const classname = selected
-                                ? 'btn-primary'
-                                : 'btn-info';
+                                ? 'btn btn-active btn-accent'
+                                : 'btn btn-outline btn-accent';
                             return (
                                 <button
                                     className={classname}
@@ -94,6 +111,17 @@ export default function Trivia() {
                             );
                         })}
                     </ul>
+                    {counter && <h1>{counter}</h1>}
+                    {playerScores?.answer && (
+                        <h2 className='btn btn-warning'>
+                            {playerScores?.answer === selectedOption
+                                ? `Correct!`
+                                : `Incorrect!`}
+                        </h2>
+                    )}
+                    {playerScores?.congratsTo && (
+                        <h2>Congrats to {playerScores?.congratsTo}!</h2>
+                    )}
                 </div>
             ) : yourTurn ? (
                 <div className='flex flex-col'>

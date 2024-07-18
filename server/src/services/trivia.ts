@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { Question } from '../rooms/schema/TriviaState';
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
@@ -10,7 +11,7 @@ export const getRandomTriviaQuestion = async () => {
     const { data, error } = await supabase
         .from('trivia_questions')
         .select(
-            'id, answered_on, question, option_1, option_2, option_3, option_4, created_at, email'
+            'id, answered_on, question, option_1, option_2, option_3, option_4, created_at, email, answer'
         )
         .is('answered_on', null);
     if (error) {
@@ -22,8 +23,13 @@ export const getRandomTriviaQuestion = async () => {
     }
     // Choose a random question
     const randomIndex = Math.floor(Math.random() * data.length);
-    const randomQuestion = data[randomIndex];
-    return randomQuestion;
+    const randomQuestion = new Question(data[randomIndex]);
+    console.log('randomQuestion: ', randomQuestion);
+    const answerIndex = randomQuestion.answer;
+
+    const answer = randomQuestion[`${answerIndex}`];
+    console.log('answer: ', answer);
+    return { randomQuestion, answer };
 };
 
 export const getAnswer = async (questionId: string) => {

@@ -5,6 +5,17 @@ import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 const client = new Colyseus.Client('ws://localhost:2567');
 
+type Player = {
+    name: string;
+    score: number;
+};
+
+type PlayerScores = {
+    answer: string;
+    players: Player[];
+    congratsTo: string;
+};
+
 export default function Layout() {
     const { user, signOut } = useAuth();
     const [profile, setProfile] = useState(null);
@@ -13,6 +24,8 @@ export default function Layout() {
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [wheel, setWheel] = useState([]);
     const [bowpourri, setBowpourri] = useState(null);
+    const [counter, setCounter] = useState(null);
+    const [playerScores, setPlayerScores] = useState<PlayerScores | null>(null);
 
     const getProfile = async () => {
         const { data, error } = await supabase
@@ -51,6 +64,16 @@ export default function Layout() {
                     room.onMessage('bowpourri', (state) => {
                         console.log('bowpourri:', state);
                         setBowpourri(state);
+                    });
+
+                    room.onMessage('counter', (state) => {
+                        console.log('counter:', state);
+                        setCounter(state);
+                    });
+
+                    room.onMessage('playerScores', (state) => {
+                        console.log('playerScores:', state);
+                        setPlayerScores(state);
                     });
                 })
                 .catch((e) => {
@@ -111,6 +134,8 @@ export default function Layout() {
                                     bowpourri,
                                     wheel,
                                     currentPlayer,
+                                    counter,
+                                    playerScores,
                                 }}
                             />
                         </div>

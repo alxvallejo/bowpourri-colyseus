@@ -17,8 +17,13 @@ export class Trivia extends Room<TriviaState> {
             const players = Array.from(this.state.wheel.values());
             if (players.length === 0) {
                 // Kick off bowpourri
-                const randomQuestion = await getRandomTriviaQuestion();
+                const { randomQuestion, answer } =
+                    await getRandomTriviaQuestion();
                 console.log('randomQuestion: ', randomQuestion);
+                // Set bowpourri
+                this.state.bowpourri = randomQuestion;
+                // Set answer
+                this.state.answer = answer;
                 // Broadcast bowpourri
                 this.broadcast('bowpourri', randomQuestion);
                 this.broadcast('currentPlayer', null);
@@ -29,6 +34,53 @@ export class Trivia extends Room<TriviaState> {
                 this.state.currentPlayer = randomPlayer;
                 // Broadcast current player
                 this.broadcast('currentPlayer', this.state.currentPlayer);
+            }
+        });
+
+        this.onMessage('answer', async (client, message) => {
+            console.log('answer', client.sessionId, message);
+            // Set answer
+            this.state.answers.set(client.sessionId, message);
+            console.log('this.state.answers: ', this.state.answers);
+
+            // Check if all players have answered
+            if (this.state.answers.size === this.state.players.size) {
+                const congratsTo = [];
+                // Get correct answer
+                const correctAnswer = this.state.answer;
+                // Calculate scores
+                this.state.answers.forEach((answer, playerId) => {
+                    const player = this.state.players.get(playerId);
+                    if (answer.answer === correctAnswer) {
+                        player.score += 1;
+                        player.isCorrect = true;
+                        congratsTo.push(player.name);
+                    }
+                });
+
+                let counter = 5;
+                const WinnerCountdown = setInterval(() => {
+                    console.log('counter', counter);
+                    this.broadcast('counter', counter);
+                    counter--;
+                    if (counter === 0) {
+                        console.log('braodcasting answer: ', correctAnswer);
+                        this.broadcast('bowpourri', null);
+                        this.broadcast('counter', null);
+                        this.broadcast('playerScores', {
+                            answer: correctAnswer,
+                            players: this.state.players,
+                            congratsTo,
+                        });
+                        clearInterval(WinnerCountdown);
+                        this.state.answers.clear();
+                    }
+                }, 1000);
+
+                // Broadcast scores
+                this.broadcast('players', this.state.players);
+                // Reset answers
+                this.state.answers.clear();
             }
         });
     }
