@@ -4,7 +4,7 @@ export const TextInput = ({
     label,
     name,
     control,
-    required = False,
+    required = false,
     readOnly = false,
 }) => (
     <label>
@@ -20,6 +20,38 @@ export const TextInput = ({
                             readOnly={readOnly}
                             required={required}
                             className='input input-bordered w-full max-w-xs'
+                        />
+                        {error && (
+                            <p className='text-red-500'>{error.message}</p>
+                        )}
+                    </div>
+                );
+            }}
+        />
+    </label>
+);
+
+export const TextAreaInput = ({
+    label,
+    name,
+    control,
+    required = false,
+    readOnly = false,
+}) => (
+    <label>
+        {label}
+        <Controller
+            name={name}
+            control={control}
+            render={({ field, fieldState: { error } }) => {
+                return (
+                    <div>
+                        <input
+                            {...field}
+                            type='textarea'
+                            readOnly={readOnly}
+                            required={required}
+                            className='textarea textarea-secondary'
                         />
                         {error && (
                             <p className='text-red-500'>{error.message}</p>

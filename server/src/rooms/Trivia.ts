@@ -65,7 +65,7 @@ export class Trivia extends Room<TriviaState> {
                     counter--;
                     if (counter === 0) {
                         console.log('braodcasting answer: ', correctAnswer);
-                        this.broadcast('bowpourri', null);
+                        // this.broadcast('bowpourri', null);
                         this.broadcast('counter', null);
                         this.broadcast('playerScores', {
                             answer: correctAnswer,
@@ -78,6 +78,7 @@ export class Trivia extends Room<TriviaState> {
                 }, 1000);
 
                 // Broadcast scores
+                console.log('broadcasting players');
                 this.broadcast('players', this.state.players);
                 // Reset answers
                 this.state.answers.clear();

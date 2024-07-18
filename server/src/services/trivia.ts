@@ -11,7 +11,7 @@ export const getRandomTriviaQuestion = async () => {
     const { data, error } = await supabase
         .from('trivia_questions')
         .select(
-            'id, answered_on, question, option_1, option_2, option_3, option_4, created_at, email, answer'
+            'id, answered_on, question, option_1, option_2, option_3, option_4, created_at, email, answer, description, image_url'
         )
         .is('answered_on', null);
     if (error) {

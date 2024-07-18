@@ -56,11 +56,6 @@ export default function Trivia() {
         }
     }, [selectedOption, trivia]);
 
-    useEffect(() => {
-        if (playerScores?.congratsTo) {
-        }
-    });
-
     const spinWheel = () => {
         if (spun) return;
         console.log('spinning wheel');
@@ -102,9 +97,10 @@ export default function Trivia() {
                                 : 'btn btn-outline btn-accent';
                             return (
                                 <button
-                                    className={classname}
+                                    className={`mb-4 ${classname}`}
                                     key={i}
                                     onClick={() => setSelectedOption(option)}
+                                    disabled={playerScores}
                                 >
                                     {option}
                                 </button>
@@ -113,14 +109,26 @@ export default function Trivia() {
                     </ul>
                     {counter && <h1>{counter}</h1>}
                     {playerScores?.answer && (
-                        <h2 className='btn btn-warning'>
-                            {playerScores?.answer === selectedOption
-                                ? `Correct!`
-                                : `Incorrect!`}
-                        </h2>
+                        <div>
+                            <h2 className='btn btn-accent'>
+                                {playerScores?.answer === selectedOption
+                                    ? `Correct!`
+                                    : `Incorrect!`}
+                            </h2>
+                            <p>
+                                Correct Answer: {playerScores?.answer} -{' '}
+                                {playerScores?.answerDescription}
+                            </p>
+                        </div>
                     )}
                     {playerScores?.congratsTo && (
-                        <h2>Congrats to {playerScores?.congratsTo}!</h2>
+                        <h2>
+                            Congrats to{' '}
+                            {playerScores?.congratsTo.length > 0
+                                ? playerScores?.congratsTo.join(', ')
+                                : `no one`}
+                            !
+                        </h2>
                     )}
                 </div>
             ) : yourTurn ? (

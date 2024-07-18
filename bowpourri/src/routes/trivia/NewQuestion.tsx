@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAuth, supabase } from '../../context/AuthProvider';
 import { useForm, Controller } from 'react-hook-form';
 import { Form, Link, useLocation, useNavigate } from 'react-router-dom';
-import { CheckboxInput, TextInput } from '../../common/form';
+import { CheckboxInput, TextAreaInput, TextInput } from '../../common/form';
 
 const defaultTriviaForm = {
     question: '',
@@ -11,6 +11,8 @@ const defaultTriviaForm = {
     option_3: '',
     option_4: '',
     answer: '',
+    description: '',
+    image_url: '',
 };
 
 export default function NewQuestion() {
@@ -69,7 +71,7 @@ export default function NewQuestion() {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className=''>
+                    <tr className='border-none'>
                         <td>
                             <TextInput
                                 label='Option 1'
@@ -87,7 +89,7 @@ export default function NewQuestion() {
                             />
                         </td>
                     </tr>
-                    <tr>
+                    <tr className='border-none'>
                         <td>
                             <TextInput
                                 label='Option 2'
@@ -105,7 +107,7 @@ export default function NewQuestion() {
                             />
                         </td>
                     </tr>
-                    <tr>
+                    <tr className='border-none'>
                         <td>
                             <TextInput
                                 label='Option 3'
@@ -123,7 +125,7 @@ export default function NewQuestion() {
                             />
                         </td>
                     </tr>
-                    <tr>
+                    <tr className='border-none'>
                         <td>
                             <TextInput
                                 label='Option 4'
@@ -143,6 +145,13 @@ export default function NewQuestion() {
                     </tr>
                 </tbody>
             </table>
+            <TextAreaInput
+                label='Description'
+                name='description'
+                control={control}
+                required
+            />
+            <TextInput label='Image URL' name='image_url' control={control} />
             <div className='form-group'>
                 <button type='submit' className='btn btn-primary'>
                     Save

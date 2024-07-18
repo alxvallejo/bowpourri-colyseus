@@ -55,6 +55,12 @@ export class Question extends Schema {
 
     @type('string')
     answer: string;
+
+    @type('string')
+    description: string;
+
+    @type('string')
+    image_url: string;
 }
 
 export class TriviaState extends Schema {
