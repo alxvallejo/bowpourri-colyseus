@@ -3,8 +3,8 @@ import { Question } from '../rooms/schema/TriviaState';
 
 // Create a single supabase client for interacting with your database
 const supabase = createClient(
-    'https://gcztkgzefsiujhojbycl.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdjenRrZ3plZnNpdWpob2pieWNsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODIyNjQ5OTAsImV4cCI6MTk5Nzg0MDk5MH0.sJ5GQBnV2T_neMDkMA44_o2-kgkbl8FFpLk6sIaTIOI'
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
 );
 
 export const getRandomTriviaQuestion = async () => {
@@ -37,6 +37,19 @@ export const getAnswer = async (questionId: string) => {
         .from('trivia')
         .select('id, answered_on, answer')
         .eq('id', questionId);
+    if (error) {
+        throw error;
+    }
+    if (data.length === 0) {
+        return null;
+    }
+    return data[0];
+};
+
+export const getTriviaStats = async () => {
+    const { data, error } = await supabase
+        .from('trivia_questions')
+        .select('id, total_questions, total_answered');
     if (error) {
         throw error;
     }
