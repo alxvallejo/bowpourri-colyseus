@@ -3,7 +3,9 @@ import { supabase, useAuth } from '../context/AuthProvider';
 
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
-const client = new Colyseus.Client('ws://localhost:2567');
+const socketUrl = import.meta.env.VITE_COLYSEUS_ENDPOINT;
+console.log('socketUrl: ', socketUrl);
+const client = new Colyseus.Client(socketUrl || 'ws://localhost:2567');
 
 type PlayerData = {
     id: string;

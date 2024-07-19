@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../context/AuthProvider';
 import { Link, Outlet, useOutletContext } from 'react-router-dom';
-import { set } from 'react-hook-form';
 import { TriviaContext } from '../layout/DefaultLayout';
 
 function shuffleArray(array) {
