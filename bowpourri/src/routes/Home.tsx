@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../context/AuthProvider';
 import { Link, Outlet, useOutletContext } from 'react-router-dom';
 import { set } from 'react-hook-form';
+import { TriviaContext } from '../layout/DefaultLayout';
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -15,7 +16,7 @@ export default function Trivia() {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
     const { trivia, bowpourri, wheel, currentPlayer, counter, playerScores } =
-        useOutletContext();
+        useOutletContext<TriviaContext | null>();
     const [spun, setSpun] = useState(false);
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -100,7 +101,7 @@ export default function Trivia() {
                                     className={`mb-4 ${classname}`}
                                     key={i}
                                     onClick={() => setSelectedOption(option)}
-                                    disabled={playerScores}
+                                    disabled={!!playerScores}
                                 >
                                     {option}
                                 </button>

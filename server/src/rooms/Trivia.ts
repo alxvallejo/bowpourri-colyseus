@@ -69,6 +69,8 @@ export class Trivia extends Room<TriviaState> {
                         this.broadcast('counter', null);
                         this.broadcast('playerScores', {
                             answer: correctAnswer,
+                            answerDescription: this.state.bowpourri.description,
+                            answerImageUrl: this.state.bowpourri.image_url,
                             players: this.state.players,
                             congratsTo,
                         });

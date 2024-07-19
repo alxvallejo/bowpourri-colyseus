@@ -5,6 +5,16 @@ import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 const client = new Colyseus.Client('ws://localhost:2567');
 
+type PlayerData = {
+    id: string;
+    name: string;
+    score: number;
+    joined_at: string;
+    email: string;
+    isCorrect: boolean;
+    answered: string;
+};
+
 type Player = {
     name: string;
     score: number;
@@ -12,8 +22,34 @@ type Player = {
 
 type PlayerScores = {
     answer: string;
+    answerDescription: string;
+    answerImageUrl: string;
     players: Player[];
-    congratsTo: string;
+    congratsTo: string[];
+};
+
+type Question = {
+    id: string;
+    answered_on: string;
+    question: string;
+    option_1: string;
+    option_2: string;
+    option_3: string;
+    option_4: string;
+    created_at: string;
+    email: string;
+    answer: string;
+    description: string;
+    image_url: string;
+};
+
+export type TriviaContext = {
+    trivia: Colyseus.Room;
+    bowpourri: Question | null;
+    wheel: PlayerData[];
+    currentPlayer: PlayerData;
+    counter: number | null;
+    playerScores: PlayerScores | null;
 };
 
 export default function Layout() {
@@ -24,7 +60,7 @@ export default function Layout() {
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [wheel, setWheel] = useState([]);
     const [bowpourri, setBowpourri] = useState(null);
-    const [counter, setCounter] = useState(null);
+    const [counter, setCounter] = useState<number | null>(null);
     const [playerScores, setPlayerScores] = useState<PlayerScores | null>(null);
 
     const getProfile = async () => {

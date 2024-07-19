@@ -8,6 +8,8 @@ export const supabase = createClient(
 
 const AuthContext = createContext({
     user: null,
+    signIn: () => {},
+    signOut: () => {},
 });
 
 export const useAuth = () => {
