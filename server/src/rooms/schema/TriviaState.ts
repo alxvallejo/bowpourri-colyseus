@@ -25,7 +25,7 @@ export class Player extends Schema {
 
 export class PlayerAnswer extends Schema {
     @type('string')
-    id: string;
+    email: string;
 
     @type('string')
     answer: string;

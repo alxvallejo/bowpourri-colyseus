@@ -12,7 +12,9 @@ export default function Questions() {
     const getQuestions = async () => {
         const { data, error } = await supabase
             .from('trivia_questions')
-            .select();
+            .select()
+            .eq('email', user.email)
+            .order('created_at', { ascending: false });
         setQuestions(data);
     };
 
@@ -34,21 +36,24 @@ export default function Questions() {
                     </tr>
                 </thead>
                 <tbody>
-                    {questions.map((question) => (
-                        <tr key={question.id} className='hover'>
-                            <td>{question.question}</td>
-                            <td>{question.answered_on}</td>
-                            <td>{dayjs(question.created_at).format('l')}</td>
-                            <td>
-                                <Link
-                                    to={`edit/${question.id}`}
-                                    state={question}
-                                >
-                                    Edit
-                                </Link>
-                            </td>
-                        </tr>
-                    ))}
+                    {Array.isArray(questions) &&
+                        questions.map((question) => (
+                            <tr key={question.id} className='hover'>
+                                <td>{question.question}</td>
+                                <td>{question.answered_on}</td>
+                                <td>
+                                    {dayjs(question.created_at).format('l')}
+                                </td>
+                                <td>
+                                    <Link
+                                        to={`edit/${question.id}`}
+                                        state={question}
+                                    >
+                                        Edit
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
                 </tbody>
             </table>
         </div>

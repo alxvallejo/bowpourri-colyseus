@@ -46,12 +46,11 @@ export const TextAreaInput = ({
             render={({ field, fieldState: { error } }) => {
                 return (
                     <div>
-                        <input
+                        <textarea
                             {...field}
-                            type='textarea'
                             readOnly={readOnly}
                             required={required}
-                            className='textarea textarea-secondary'
+                            className='textarea textarea-info w-full'
                         />
                         {error && (
                             <p className='text-red-500'>{error.message}</p>

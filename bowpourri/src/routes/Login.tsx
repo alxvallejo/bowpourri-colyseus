@@ -2,6 +2,8 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../context/AuthProvider';
 
+const currentUrl = window.location.protocol + '//' + window.location.host;
+
 export default function Login() {
     return (
         <div className='hero min-h-screen bg-base-200'>
@@ -20,6 +22,8 @@ export default function Login() {
                             supabaseClient={supabase}
                             appearance={{ theme: ThemeSupa }}
                             providers={['google']}
+                            // redirectTo='http://localhost:5173' // For local testing, otherwise uses the default redirect set in supabase
+                            redirectTo={currentUrl}
                         />
                     </div>
                 </div>

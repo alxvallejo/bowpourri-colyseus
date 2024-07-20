@@ -26,6 +26,9 @@ export default function NewQuestion() {
     useEffect(() => {
         if (state) {
             reset({ ...state });
+        } else {
+            console.log('no state');
+            reset(defaultTriviaForm);
         }
     }, [state]);
 
@@ -56,7 +59,7 @@ export default function NewQuestion() {
 
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
-            <TextInput
+            <TextAreaInput
                 label='Question'
                 name='question'
                 control={control}
@@ -66,7 +69,7 @@ export default function NewQuestion() {
             <table className='table'>
                 <thead>
                     <tr>
-                        <th>Question</th>
+                        <th>Option</th>
                         <th>Is Answer</th>
                     </tr>
                 </thead>
@@ -146,17 +149,17 @@ export default function NewQuestion() {
                 </tbody>
             </table>
             <TextAreaInput
-                label='Description'
+                label='Provide some context for your answer.'
                 name='description'
                 control={control}
                 required
             />
             <TextInput label='Image URL' name='image_url' control={control} />
-            <div className='form-group'>
-                <button type='submit' className='btn btn-primary'>
+            <div className='form-group mt-4'>
+                <button type='submit' className='btn btn-outline btn-primary'>
                     Save
                 </button>
-                <Link to='..' className='btn btn-secondary'>
+                <Link to='..' className='btn btn-outline btn-neutral ml-4'>
                     Cancel
                 </Link>
             </div>

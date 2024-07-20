@@ -1,5 +1,5 @@
 import { Room, Client } from '@colyseus/core';
-import { Player, TriviaState } from './schema/TriviaState';
+import { Player, PlayerAnswer, TriviaState } from './schema/TriviaState';
 import { Schema, MapSchema, type } from '@colyseus/schema';
 import { getRandomTriviaQuestion } from '../services/trivia';
 
@@ -39,8 +39,21 @@ export class Trivia extends Room<TriviaState> {
 
         this.onMessage('answer', async (client, message) => {
             console.log('answer', client.sessionId, message);
+            // Get player
+            const player = this.state.players.get(client.sessionId);
+
+            if (!player) {
+                console.log('Player not found', client.sessionId);
+                return;
+            }
+
+            // Prepare Answer
+            const playerAnswer = new PlayerAnswer({
+                email: player.email,
+                answer: message,
+            });
             // Set answer
-            this.state.answers.set(client.sessionId, message);
+            this.state.answers.set(player.email, playerAnswer);
             console.log('this.state.answers: ', this.state.answers);
 
             // Check if all players have answered
@@ -122,6 +135,8 @@ export class Trivia extends Room<TriviaState> {
 
     onLeave(client: Client, consented: boolean) {
         console.log(client.sessionId, 'left!');
+        // Remove player from players
+        this.state.players.delete(client.sessionId);
     }
 
     onDispose() {
