@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 
+const light = 'wireframe';
+const dark = 'night';
+
 export const ThemeSwitch = () => {
-    const [theme, setTheme] = useState('light');
+    const [theme, setTheme] = useState(light);
     const toggleTheme = () => {
         console.log('toggling theme');
-        setTheme(theme === 'dark' ? 'light' : 'dark');
+        setTheme(theme === dark ? light : dark);
     };
     // initially set the theme and "listen" for changes to apply them to the HTML tag
     useEffect(() => {
