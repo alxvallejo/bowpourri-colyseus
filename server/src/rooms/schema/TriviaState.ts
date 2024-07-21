@@ -39,6 +39,9 @@ export class Question extends Schema {
     question: string;
 
     @type('string')
+    topic: string;
+
+    @type('string')
     option_1: string;
 
     @type('string')

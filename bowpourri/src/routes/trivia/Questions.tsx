@@ -1,13 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../../context/AuthProvider';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { PlayerData, TriviaContext } from '../../layout/DefaultLayout';
 dayjs.extend(localizedFormat);
+
+type QuestionsProps = {
+    players: PlayerData[] | null;
+};
 
 export default function Questions() {
     const { user } = useAuth();
     const [questions, setQuestions] = useState([]);
+    const { players } = useOutletContext<QuestionsProps>();
+    const context = useOutletContext();
+    console.log('context: ', context);
 
     const getQuestions = async () => {
         const { data, error } = await supabase
@@ -26,12 +34,13 @@ export default function Questions() {
 
     return (
         <div>
-            <table className='table'>
+            <table className='table w-full'>
                 <thead>
                     <tr>
                         <th>Question</th>
                         <th>Answered On</th>
                         <th>Created At</th>
+                        <th>Topic</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -44,6 +53,7 @@ export default function Questions() {
                                 <td>
                                     {dayjs(question.created_at).format('l')}
                                 </td>
+                                <td>{question.topic}</td>
                                 <td>
                                     <Link
                                         to={`edit/${question.id}`}

@@ -8,9 +8,10 @@ export class Trivia extends Room<TriviaState> {
         this.setState(new TriviaState());
 
         this.onMessage('spin', async (client, message) => {
+            const { email } = client.userData;
             console.log('spin', client.sessionId);
             // Remove current player from wheel
-            this.state.wheel.delete(this.state.currentPlayer.id);
+            this.state.wheel.delete(email);
             // Broadcast wheel
             this.broadcast('wheel', this.state.wheel);
             // Select random player from wheel
@@ -39,22 +40,22 @@ export class Trivia extends Room<TriviaState> {
 
         this.onMessage('answer', async (client, message) => {
             console.log('answer', client.sessionId, message);
+            const { email } = client.userData;
             // Get player
-            const player = this.state.players.get(client.sessionId);
+            const player = this.state.players.get(email);
 
             if (!player) {
-                console.log('Player not found', client.sessionId);
+                console.log('Player not found', email);
                 return;
             }
 
             // Prepare Answer
             const playerAnswer = new PlayerAnswer({
-                email: player.email,
+                email: email,
                 answer: message,
             });
             // Set answer
-            this.state.answers.set(player.email, playerAnswer);
-            console.log('this.state.answers: ', this.state.answers);
+            this.state.answers.set(email, playerAnswer);
 
             // Check if all players have answered
             if (this.state.answers.size === this.state.players.size) {
@@ -62,8 +63,8 @@ export class Trivia extends Room<TriviaState> {
                 // Get correct answer
                 const correctAnswer = this.state.answer;
                 // Calculate scores
-                this.state.answers.forEach((answer, playerId) => {
-                    const player = this.state.players.get(playerId);
+                this.state.answers.forEach((answer, playerEmail) => {
+                    const player = this.state.players.get(playerEmail);
                     if (answer.answer === correctAnswer) {
                         player.score += 1;
                         player.isCorrect = true;
@@ -103,24 +104,25 @@ export class Trivia extends Room<TriviaState> {
 
     onJoin(client: Client, options: any) {
         const { profile } = options;
+        // Set userData on client
+        client.userData = profile;
         // Check if player already exists by email
-        const existingPlayer = Array.from(this.state.players.values()).find(
-            (player) => player.email === profile.email
-        );
-        if (existingPlayer) {
-            // Update player's score
-            this.state.players.delete(existingPlayer.id);
-        }
-        const player = new Player();
-        player.id = client.sessionId;
-        player.name = profile.name;
-        player.email = profile.email;
-        player.joined_at = new Date().toISOString();
-        player.score = profile.score;
-        this.state.players.set(client.sessionId, player);
-
-        if (this.state.players.size === 1) {
-            this.state.currentPlayer = player;
+        const existingPlayer = this.state.players.get(profile.email);
+        if (!existingPlayer) {
+            const player = new Player();
+            player.id = client.sessionId;
+            player.name = profile.name;
+            player.email = profile.email;
+            player.joined_at = new Date().toISOString();
+            player.score = profile.score;
+            this.state.players.set(profile.email, player);
+            if (this.state.players.size === 1) {
+                this.state.currentPlayer = player;
+            }
+        } else {
+            if (this.state.players.size === 1) {
+                this.state.currentPlayer = existingPlayer;
+            }
         }
 
         console.log(client.sessionId, 'joined!');
@@ -135,8 +137,17 @@ export class Trivia extends Room<TriviaState> {
 
     onLeave(client: Client, consented: boolean) {
         console.log(client.sessionId, 'left!');
-        // Remove player from players
-        this.state.players.delete(client.sessionId);
+        console.log('client.userData.email: ', client.userData.email);
+        if (client.userData.email) {
+            // Remove player from players
+            this.state.players.delete(client.userData.email);
+            // Remove player from wheel
+            this.state.wheel.delete(client.userData.email);
+            // Broadcast wheel
+            this.broadcast('wheel', this.state.wheel);
+            // Broadcast players
+            this.broadcast('players', this.state.players);
+        }
     }
 
     onDispose() {

@@ -27,7 +27,7 @@ const router = createBrowserRouter([
                         element: <Home />,
                     },
                     {
-                        path: 'trivia',
+                        path: 'questions',
                         element: <Trivia />,
                         children: [
                             {

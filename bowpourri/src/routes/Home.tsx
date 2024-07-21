@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../context/AuthProvider';
-import { Link, Outlet, useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { TriviaContext } from '../layout/DefaultLayout';
 
 function shuffleArray(array) {
@@ -14,8 +14,15 @@ function shuffleArray(array) {
 export default function Trivia() {
     const { user } = useAuth();
     const [profile, setProfile] = useState(null);
-    const { trivia, bowpourri, wheel, currentPlayer, counter, playerScores } =
-        useOutletContext<TriviaContext | null>();
+    const {
+        trivia,
+        players,
+        bowpourri,
+        wheel,
+        currentPlayer,
+        counter,
+        playerScores,
+    } = useOutletContext<TriviaContext | null>();
     const [spun, setSpun] = useState(false);
     const [options, setOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -68,10 +75,10 @@ export default function Trivia() {
 
     console.log('bowpourri: ', bowpourri);
 
-    console.log('playerScores?.congratsTo', playerScores?.congratsTo);
+    console.log('playerScores?', playerScores);
 
     return (
-        <div>
+        <div className='flex flex-col w-full'>
             <h4>Welcome, {profile?.name}</h4>
             {!yourTurn && <h3>Prepare for standup...</h3>}
 
@@ -99,8 +106,10 @@ export default function Trivia() {
                                 <button
                                     className={`mb-4 ${classname}`}
                                     key={i}
-                                    onClick={() => setSelectedOption(option)}
-                                    disabled={!!playerScores}
+                                    onClick={() => {
+                                        if (playerScores?.answer) return;
+                                        setSelectedOption(option);
+                                    }}
                                 >
                                     {option}
                                 </button>
@@ -129,6 +138,9 @@ export default function Trivia() {
                                 : `no one`}
                             !
                         </h2>
+                    )}
+                    {playerScores?.answerImageUrl && (
+                        <img src={playerScores?.answerImageUrl} />
                     )}
                 </div>
             ) : yourTurn ? (

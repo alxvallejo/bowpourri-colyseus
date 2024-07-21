@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../../context/AuthProvider';
 import { useForm, Controller } from 'react-hook-form';
 import { Form, Link, useLocation, useNavigate } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { CheckboxInput, TextAreaInput, TextInput } from '../../common/form';
 
 const defaultTriviaForm = {
     question: '',
+    topic: '',
     option_1: '',
     option_2: '',
     option_3: '',
@@ -22,19 +23,31 @@ export default function NewQuestion() {
     });
     const { state } = useLocation();
     const navigate = useNavigate();
+    const [topics, setTopics] = useState([]);
+    const [selectedTopic, setSelectedTopic] = useState('');
+
+    const getTopics = async () => {
+        const { data, error } = await supabase.from('topics').select('name');
+        setTopics(data);
+    };
 
     useEffect(() => {
         if (state) {
             reset({ ...state });
+            setSelectedTopic(state.topic);
         } else {
-            console.log('no state');
             reset(defaultTriviaForm);
         }
     }, [state]);
 
+    useEffect(() => {
+        getTopics();
+    }, []);
+
     const onSubmit = async (data: any) => {
+        console.log('submitting', data);
+        data.topic = selectedTopic;
         if (state) {
-            console.log('state: ', state);
             const { data: trivia, error } = await supabase
                 .from('trivia_questions')
                 .update([
@@ -54,7 +67,7 @@ export default function NewQuestion() {
                     },
                 ]);
         }
-        navigate('/trivia');
+        navigate('/questions');
     };
 
     return (
@@ -65,6 +78,23 @@ export default function NewQuestion() {
                 control={control}
                 required
             />
+
+            {topics.map((topic, i) => {
+                const selected = selectedTopic === topic.name;
+                const className = selected
+                    ? `btn btn-secondary`
+                    : `btn btn-outline btn-secondary`;
+                return (
+                    <button
+                        key={topic.name}
+                        type='button'
+                        className={`${className} ml-3`}
+                        onClick={() => setSelectedTopic(topic.name)}
+                    >
+                        {topic.name}
+                    </button>
+                );
+            })}
 
             <table className='table'>
                 <thead>
@@ -156,7 +186,11 @@ export default function NewQuestion() {
             />
             <TextInput label='Image URL' name='image_url' control={control} />
             <div className='form-group mt-4'>
-                <button type='submit' className='btn btn-outline btn-primary'>
+                <button
+                    type='submit'
+                    className='btn btn-outline btn-primary'
+                    disabled={!selectedTopic}
+                >
                     Save
                 </button>
                 <Link to='..' className='btn btn-outline btn-neutral ml-4'>

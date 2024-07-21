@@ -7,7 +7,7 @@ const socketUrl = import.meta.env.VITE_COLYSEUS_ENDPOINT;
 console.log('socketUrl: ', socketUrl);
 const client = new Colyseus.Client(socketUrl || 'ws://localhost:2567');
 
-type PlayerData = {
+export type PlayerData = {
     id: string;
     name: string;
     score: number;
@@ -47,6 +47,7 @@ type Question = {
 
 export type TriviaContext = {
     trivia: Colyseus.Room;
+    players: PlayerData[];
     bowpourri: Question | null;
     wheel: PlayerData[];
     currentPlayer: PlayerData;
@@ -58,7 +59,7 @@ export default function Layout() {
     const { user, signOut } = useAuth();
     const [profile, setProfile] = useState(null);
     const [trivia, setTrivia] = useState(null);
-    const [players, setPlayers] = useState([]);
+    const [players, setPlayers] = useState<PlayerData[]>([]);
     const [currentPlayer, setCurrentPlayer] = useState(null);
     const [wheel, setWheel] = useState([]);
     const [bowpourri, setBowpourri] = useState(null);
@@ -73,11 +74,37 @@ export default function Layout() {
         setProfile(data[0]);
     };
 
+    const getQuestionsByUser = async (players) => {
+        const { data, error } = await supabase
+            .from('trivia_questions')
+            .select('email, topic, answered_on, created_at')
+            .is('answered_on', null);
+        console.log(data);
+
+        // Group by email
+        const grouped = data.reduce((acc, curr) => {
+            const player = players.find(
+                (player) => player.email === curr.email
+            );
+            if (!player) {
+                return acc;
+            }
+            const name = player.name;
+            if (!acc[name]) {
+                acc[name] = [];
+            }
+            acc[name].push(curr);
+            return acc;
+        }, {});
+        console.log('grouped', grouped);
+    };
+
     useEffect(() => {
         if (user && !profile) {
             getProfile();
         }
         if (user && profile) {
+            getQuestionsByUser(players);
             client
                 .joinOrCreate('trivia', { profile })
                 .then((room) => {
@@ -85,7 +112,6 @@ export default function Layout() {
                     setTrivia(room);
 
                     room.onMessage('players', (state) => {
-                        console.log('initial room state:', state);
                         setPlayers(Object.values(state));
                     });
 
@@ -95,7 +121,6 @@ export default function Layout() {
                     });
 
                     room.onMessage('currentPlayer', (state) => {
-                        console.log('currentPlayer:', state);
                         setCurrentPlayer(state);
                     });
 
@@ -169,6 +194,7 @@ export default function Layout() {
                             <Outlet
                                 context={{
                                     trivia,
+                                    players,
                                     bowpourri,
                                     wheel,
                                     currentPlayer,
@@ -190,10 +216,7 @@ export default function Layout() {
                                         <Link to='/'>Home</Link>
                                     </li>
                                     <li>
-                                        <Link to='/trivia'>Trivia</Link>
-                                    </li>
-                                    <li className='align-bottom'>
-                                        <a>Sign out</a>
+                                        <Link to='/questions'>Questions</Link>
                                     </li>
                                 </ul>
 
