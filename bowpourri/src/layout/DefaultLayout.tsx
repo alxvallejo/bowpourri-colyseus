@@ -3,6 +3,7 @@ import { supabase, useAuth } from '../context/AuthProvider';
 
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
+import { ThemeSwitch } from './ThemeSwitch';
 const socketUrl = import.meta.env.VITE_COLYSEUS_ENDPOINT;
 console.log('socketUrl: ', socketUrl);
 const client = new Colyseus.Client(socketUrl || 'ws://localhost:2567');
@@ -74,37 +75,11 @@ export default function Layout() {
         setProfile(data[0]);
     };
 
-    const getQuestionsByUser = async (players) => {
-        const { data, error } = await supabase
-            .from('trivia_questions')
-            .select('email, topic, answered_on, created_at')
-            .is('answered_on', null);
-        console.log(data);
-
-        // Group by email
-        const grouped = data.reduce((acc, curr) => {
-            const player = players.find(
-                (player) => player.email === curr.email
-            );
-            if (!player) {
-                return acc;
-            }
-            const name = player.name;
-            if (!acc[name]) {
-                acc[name] = [];
-            }
-            acc[name].push(curr);
-            return acc;
-        }, {});
-        console.log('grouped', grouped);
-    };
-
     useEffect(() => {
         if (user && !profile) {
             getProfile();
         }
         if (user && profile) {
-            getQuestionsByUser(players);
             client
                 .joinOrCreate('trivia', { profile })
                 .then((room) => {
@@ -161,7 +136,10 @@ export default function Layout() {
                 <div className='navbar-end'>
                     <div className='flex flex-1 justify-end px-2'>
                         <div className='flex items-center'>
-                            <div>{user?.name || user?.email}</div>
+                            <ThemeSwitch />
+                            <div className='ml-4'>
+                                {user?.name || user?.email}
+                            </div>
                             <button
                                 type='submit'
                                 className='rounded py-2 px-4'
