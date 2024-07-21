@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const light = 'wireframe';
+const light = 'light';
 const dark = 'night';
 
 export const ThemeSwitch = () => {
