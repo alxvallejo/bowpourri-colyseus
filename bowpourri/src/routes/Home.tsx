@@ -71,11 +71,11 @@ export default function Trivia() {
     };
 
     const yourTurn = currentPlayer?.email === profile?.email;
-    console.log('yourTurn: ', yourTurn);
+    // console.log('yourTurn: ', yourTurn);
 
-    console.log('bowpourri: ', bowpourri);
+    // console.log('bowpourri: ', bowpourri);
 
-    console.log('playerScores?', playerScores);
+    // console.log('playerScores', playerScores);
 
     return (
         <div className='flex flex-col w-full'>
@@ -89,7 +89,7 @@ export default function Trivia() {
                 ></textarea>
             </div>
             <nav>
-                <Link to='trivia'>Add a trivia question!</Link>
+                <Link to='questions'>Add a trivia question!</Link>
             </nav>
 
             {bowpourri ? (
