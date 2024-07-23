@@ -95,6 +95,8 @@ export default function Trivia() {
             {bowpourri ? (
                 <div className='shadow p-4'>
                     <h2>Bowpourri</h2>
+                    <p>Today's topic</p>
+                    <h3>{bowpourri.topic}</h3>
                     <p>{bowpourri.question}</p>
                     <ul className='flex flex-col'>
                         {options.map((option, i) => {
@@ -143,6 +145,8 @@ export default function Trivia() {
                         <img src={playerScores?.answerImageUrl} />
                     )}
                 </div>
+            ) : wheel.length > 0 ? (
+                <p>Waiting for more players...</p>
             ) : yourTurn ? (
                 <div className='flex flex-col'>
                     <div className='stats shadow'>

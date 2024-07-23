@@ -35,6 +35,7 @@ type Question = {
     id: string;
     answered_on: string;
     question: string;
+    topic: string;
     option_1: string;
     option_2: string;
     option_3: string;
@@ -91,7 +92,6 @@ export default function Layout() {
                     });
 
                     room.onMessage('wheel', (state) => {
-                        console.log('initial room state:', state);
                         setWheel(Object.values(state));
                     });
 
