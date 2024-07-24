@@ -16,6 +16,12 @@ const defaultTriviaForm = {
     image_url: '',
 };
 
+type Topic = {
+    name: string;
+    id: string;
+    topic_count: number;
+};
+
 export default function NewQuestion() {
     const { user } = useAuth();
     const { register, handleSubmit, control, reset } = useForm({
@@ -24,10 +30,12 @@ export default function NewQuestion() {
     const { state } = useLocation();
     const navigate = useNavigate();
     const [topics, setTopics] = useState([]);
-    const [selectedTopic, setSelectedTopic] = useState('');
+    const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
 
     const getTopics = async () => {
-        const { data, error } = await supabase.from('topics').select('name');
+        const { data, error } = await supabase
+            .from('topics')
+            .select('name, id, topic_count');
         setTopics(data);
     };
 
@@ -46,7 +54,12 @@ export default function NewQuestion() {
 
     const onSubmit = async (data: any) => {
         console.log('submitting', data);
-        data.topic = selectedTopic;
+        if (!selectedTopic) {
+            alert('Please select a topic');
+            return;
+        }
+        data.topic = selectedTopic.name;
+        const dirtyTopic = selectedTopic !== state?.topic;
         if (state) {
             const { data: trivia, error } = await supabase
                 .from('trivia_questions')
@@ -57,6 +70,24 @@ export default function NewQuestion() {
                     },
                 ])
                 .eq('id', state.id);
+            if (error) {
+                console.error('error', error);
+                return;
+            }
+            if (dirtyTopic) {
+                const newCounts = {
+                    old: state.topic_count - 1,
+                    new: selectedTopic.topic_count + 1,
+                };
+                const updateOldTopicCount = await supabase
+                    .from('topics')
+                    .update({ topic_count: newCounts.old })
+                    .eq('id', state.topic.id);
+                const updateNewTopicCount = await supabase
+                    .from('topics')
+                    .update({ topic_count: newCounts.new })
+                    .eq('id', selectedTopic.id);
+            }
         } else {
             const { data: trivia, error } = await supabase
                 .from('trivia_questions')
@@ -66,6 +97,14 @@ export default function NewQuestion() {
                         email: user?.email,
                     },
                 ]);
+            if (error) {
+                console.error('error', error);
+                return;
+            }
+            const newTopicCount = await supabase
+                .from('topics')
+                .update({ topic_count: selectedTopic.topic_count + 1 })
+                .eq('id', selectedTopic.id);
         }
         navigate('/questions');
     };
@@ -89,7 +128,7 @@ export default function NewQuestion() {
                         key={topic.name}
                         type='button'
                         className={`${className} ml-3`}
-                        onClick={() => setSelectedTopic(topic.name)}
+                        onClick={() => setSelectedTopic(topic)}
                     >
                         {topic.name}
                     </button>

@@ -67,6 +67,8 @@ export default function Layout() {
     const [bowpourri, setBowpourri] = useState(null);
     const [counter, setCounter] = useState<number | null>(null);
     const [playerScores, setPlayerScores] = useState<PlayerScores | null>(null);
+    const [totalCount, setTotalCount] = useState(0);
+    const [popularTopics, setPopularTopics] = useState([]);
 
     const getProfile = async () => {
         const { data, error } = await supabase
@@ -76,9 +78,28 @@ export default function Layout() {
         setProfile(data[0]);
     };
 
+    const getTriviaStats = async () => {
+        const countResp = await supabase
+            .from('trivia_questions')
+            .select('*', { count: 'exact', head: true })
+            .is('answered_on', null);
+        console.log('total questions: ', countResp.count);
+
+        setTotalCount(countResp.count);
+
+        const popularResp = await supabase
+            .from('topics')
+            .select('name, topic_count')
+            .order('topic_count', { ascending: false });
+
+        console.log('popular topics: ', popularResp.data);
+        setPopularTopics(popularResp.data);
+    };
+
     useEffect(() => {
         if (user && !profile) {
             getProfile();
+            getTriviaStats();
         }
         if (user && profile) {
             client
@@ -199,10 +220,10 @@ export default function Layout() {
                                 </ul>
 
                                 <div className='overflow-x-auto'>
-                                    <h2 className='text-2xl font-bold text-center'>
+                                    <h2 className='text-xl text-center'>
                                         Wheel
                                     </h2>
-                                    <table className='table'>
+                                    <table className='table table-sm'>
                                         {/* head */}
                                         <thead>
                                             <tr>
@@ -220,10 +241,10 @@ export default function Layout() {
                                 </div>
 
                                 <div className='overflow-x-auto'>
-                                    <h2 className='text-2xl font-bold text-center'>
+                                    <h2 className='text-xl text-center'>
                                         Scoreboard
                                     </h2>
-                                    <table className='table'>
+                                    <table className='table table-sm'>
                                         {/* head */}
                                         <thead>
                                             <tr>
@@ -240,6 +261,64 @@ export default function Layout() {
                                             ))}
                                         </tbody>
                                     </table>
+                                </div>
+
+                                <div className='overflow-x-auto'>
+                                    <h2 className='text-xl text-center'>
+                                        Topics
+                                    </h2>
+                                    <table className='table table-sm'>
+                                        {/* head */}
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Count</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {popularTopics.map(
+                                                (topic, index) => (
+                                                    <tr key={index}>
+                                                        <td>{topic.name}</td>
+                                                        <td>
+                                                            {topic.topic_count}
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className='overflow-x-auto'>
+                                    <div className='stats shadow'>
+                                        <div className='stat place-items-center'>
+                                            <div className='stat-title'>
+                                                Questions in the Queue
+                                            </div>
+                                            <div className='stat-value'>
+                                                {totalCount}
+                                            </div>
+                                        </div>
+
+                                        {/* <div className='stat'>
+                                            <div className='stat-title'>
+                                                Most Popular
+                                            </div>
+                                            <div className='stat-value'>
+                                                4,200
+                                            </div>
+                                        </div> */}
+
+                                        {/* <div className='stat'>
+                                            <div className='stat-title'>
+                                                Most Submitted
+                                            </div>
+                                            <div className='stat-value'>
+                                                1,200
+                                            </div>
+                                        </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </div>

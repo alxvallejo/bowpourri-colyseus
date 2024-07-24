@@ -14,15 +14,15 @@ export default function Questions() {
     const { user } = useAuth();
     const [questions, setQuestions] = useState([]);
     const { players } = useOutletContext<QuestionsProps>();
-    const context = useOutletContext();
-    console.log('context: ', context);
 
     const getQuestions = async () => {
+        console.log('getting questions');
         const { data, error } = await supabase
             .from('trivia_questions')
             .select()
             .eq('email', user.email)
             .order('created_at', { ascending: false });
+        console.log('questions', data);
         setQuestions(data);
     };
 
