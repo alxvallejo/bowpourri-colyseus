@@ -9,6 +9,7 @@ import {
     useOutletContext,
 } from 'react-router-dom';
 import { CheckboxInput, TextAreaInput, TextInput } from '../../common/form';
+import { TriviaContext } from '../../layout/DefaultLayout';
 
 const defaultTriviaForm = {
     question: '',
@@ -37,7 +38,7 @@ export default function NewQuestion() {
     const navigate = useNavigate();
     const [topics, setTopics] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-    const { refreshStats } = useOutletContext();
+    const { refreshStats } = useOutletContext<TriviaContext | null>();
 
     const getTopics = async () => {
         const { data, error } = await supabase
