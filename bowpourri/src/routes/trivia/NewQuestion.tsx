@@ -133,7 +133,7 @@ export default function NewQuestion() {
             />
 
             {topics.map((topic, i) => {
-                const selected = selectedTopic.name === topic.name;
+                const selected = selectedTopic?.name === topic.name;
                 const className = selected
                     ? `btn btn-secondary`
                     : `btn btn-outline btn-secondary`;
