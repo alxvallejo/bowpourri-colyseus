@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useAuth, supabase } from '../../context/AuthProvider';
 import { useForm, Controller } from 'react-hook-form';
-import { Form, Link, useLocation, useNavigate } from 'react-router-dom';
+import {
+    Form,
+    Link,
+    useLocation,
+    useNavigate,
+    useOutletContext,
+} from 'react-router-dom';
 import { CheckboxInput, TextAreaInput, TextInput } from '../../common/form';
 
 const defaultTriviaForm = {
@@ -31,11 +37,13 @@ export default function NewQuestion() {
     const navigate = useNavigate();
     const [topics, setTopics] = useState([]);
     const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+    const { refreshStats } = useOutletContext();
 
     const getTopics = async () => {
         const { data, error } = await supabase
             .from('topics')
             .select('name, id, topic_count');
+        console.log('topics', data);
         setTopics(data);
     };
 
@@ -76,9 +84,10 @@ export default function NewQuestion() {
             }
             if (dirtyTopic) {
                 const newCounts = {
-                    old: state.topic_count - 1,
-                    new: selectedTopic.topic_count + 1,
+                    old: (state.topic_count || 1) - 1,
+                    new: (selectedTopic.topic_count || 0) + 1,
                 };
+                console.log('newCounts: ', newCounts);
                 const updateOldTopicCount = await supabase
                     .from('topics')
                     .update({ topic_count: newCounts.old })
@@ -101,11 +110,15 @@ export default function NewQuestion() {
                 console.error('error', error);
                 return;
             }
+            const newCount = (selectedTopic.topic_count || 0) + 1;
+            console.log('newCount: ', newCount);
             const newTopicCount = await supabase
                 .from('topics')
-                .update({ topic_count: selectedTopic.topic_count + 1 })
+                .update({ topic_count: newCount })
                 .eq('id', selectedTopic.id);
+            console.log('newTopicCount: ', newTopicCount);
         }
+        refreshStats();
         navigate('/questions');
     };
 
@@ -119,7 +132,7 @@ export default function NewQuestion() {
             />
 
             {topics.map((topic, i) => {
-                const selected = selectedTopic === topic.name;
+                const selected = selectedTopic.name === topic.name;
                 const className = selected
                     ? `btn btn-secondary`
                     : `btn btn-outline btn-secondary`;
@@ -134,6 +147,8 @@ export default function NewQuestion() {
                     </button>
                 );
             })}
+
+            <p>Options will be shuffled randomly to players.</p>
 
             <table className='table'>
                 <thead>

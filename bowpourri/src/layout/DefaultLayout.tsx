@@ -90,7 +90,7 @@ export default function Layout() {
         const popularResp = await supabase
             .from('topics')
             .select('name, topic_count')
-            .order('topic_count', { ascending: false });
+            .order('topic_count', { ascending: true });
 
         console.log('popular topics: ', popularResp.data);
         setPopularTopics(popularResp.data);
@@ -199,6 +199,7 @@ export default function Layout() {
                                     currentPlayer,
                                     counter,
                                     playerScores,
+                                    refreshStats: getTriviaStats,
                                 }}
                             />
                         </div>
