@@ -55,6 +55,7 @@ export type TriviaContext = {
     currentPlayer: PlayerData;
     counter: number | null;
     playerScores: PlayerScores | null;
+    refreshStats: () => void;
 };
 
 export default function Layout() {
