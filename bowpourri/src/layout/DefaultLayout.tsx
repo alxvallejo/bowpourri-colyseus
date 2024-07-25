@@ -8,6 +8,7 @@ import { helloWorld } from '../services/game';
 const socketUrl = import.meta.env.VITE_COLYSEUS_ENDPOINT;
 console.log('socketUrl: ', socketUrl);
 const client = new Colyseus.Client(socketUrl || 'ws://localhost:2567');
+import toast, { Toaster } from 'react-hot-toast';
 
 export type PlayerData = {
     id: string;
@@ -122,6 +123,7 @@ export default function Layout() {
                     });
 
                     room.onMessage('wheel', (state) => {
+                        console.log('wheel: ', state);
                         setWheel(Object.values(state));
                     });
 
@@ -148,6 +150,10 @@ export default function Layout() {
                         console.log('triviaStats:', state);
                         setTotalCount(state.total_count);
                         setPopularTopics(state.popular_topics);
+                    });
+
+                    room.onMessage('success', (message) => {
+                        toast.success(message);
                     });
                 })
                 .catch((e) => {
@@ -341,6 +347,7 @@ export default function Layout() {
                     </div>
                 </div>
             </main>
+            <Toaster position='top-right' />
         </div>
     );
 }

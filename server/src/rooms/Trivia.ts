@@ -122,10 +122,15 @@ export class Trivia extends Room<TriviaState> {
             player.joined_at = new Date().toISOString();
             player.score = profile.score;
             this.state.players.set(profile.email, player);
+            this.state.wheel.set(profile.email, player);
             if (this.state.players.size === 1) {
                 this.state.currentPlayer = player;
             }
+            this.broadcast('success', `${profile.name} joined!`);
+            this.broadcast('players', this.state.players);
+            this.broadcast('wheel', this.state.wheel);
         } else {
+            console.log('existing player!');
             if (this.state.players.size === 1) {
                 this.state.currentPlayer = existingPlayer;
             }
@@ -133,11 +138,6 @@ export class Trivia extends Room<TriviaState> {
 
         console.log(client.sessionId, 'joined!');
 
-        // Copy players to wheel
-        this.state.wheel = new MapSchema<Player>(this.state.players);
-
-        this.broadcast('players', this.state.players);
-        this.broadcast('wheel', this.state.wheel);
         this.broadcast('currentPlayer', this.state.currentPlayer);
     }
 
