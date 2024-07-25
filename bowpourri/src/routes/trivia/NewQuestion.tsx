@@ -51,9 +51,13 @@ export default function NewQuestion() {
     useEffect(() => {
         if (state) {
             reset({ ...state });
-            setSelectedTopic(state.topic);
+            const matchingTopic = topics.find(
+                (topic: Topic) => topic.name === state.topic
+            );
+            setSelectedTopic(matchingTopic || null);
         } else {
             reset(defaultTriviaForm);
+            setSelectedTopic(null);
         }
     }, [state]);
 

@@ -4,6 +4,7 @@ import { supabase, useAuth } from '../context/AuthProvider';
 import * as Colyseus from 'colyseus.js';
 import { useEffect, useState } from 'react';
 import { ThemeSwitch } from './ThemeSwitch';
+import { helloWorld } from '../services/game';
 const socketUrl = import.meta.env.VITE_COLYSEUS_ENDPOINT;
 console.log('socketUrl: ', socketUrl);
 const client = new Colyseus.Client(socketUrl || 'ws://localhost:2567');
@@ -97,12 +98,19 @@ export default function Layout() {
         setPopularTopics(popularResp.data);
     };
 
+    const refreshTriviaStats = async () => {
+        if (trivia) {
+            trivia.send('refreshTriviaStats');
+        }
+    };
+
     useEffect(() => {
         if (user && !profile) {
             getProfile();
             getTriviaStats();
         }
         if (user && profile) {
+            helloWorld();
             client
                 .joinOrCreate('trivia', { profile })
                 .then((room) => {
@@ -134,6 +142,12 @@ export default function Layout() {
                     room.onMessage('playerScores', (state) => {
                         console.log('playerScores:', state);
                         setPlayerScores(state);
+                    });
+
+                    room.onMessage('triviaStats', (state) => {
+                        console.log('triviaStats:', state);
+                        setTotalCount(state.total_count);
+                        setPopularTopics(state.popular_topics);
                     });
                 })
                 .catch((e) => {
@@ -200,7 +214,7 @@ export default function Layout() {
                                     currentPlayer,
                                     counter,
                                     playerScores,
-                                    refreshStats: getTriviaStats,
+                                    refreshStats: refreshTriviaStats,
                                 }}
                             />
                         </div>

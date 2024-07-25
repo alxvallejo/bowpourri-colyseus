@@ -1,7 +1,7 @@
 import { Room, Client } from '@colyseus/core';
 import { Player, PlayerAnswer, TriviaState } from './schema/TriviaState';
 import { Schema, MapSchema, type } from '@colyseus/schema';
-import { getRandomTriviaQuestion } from '../services/trivia';
+import { getRandomTriviaQuestion, getTriviaStats } from '../services/trivia';
 
 export class Trivia extends Room<TriviaState> {
     onCreate(options: any) {
@@ -99,6 +99,12 @@ export class Trivia extends Room<TriviaState> {
                 // Reset answers
                 this.state.answers.clear();
             }
+        });
+
+        this.onMessage('refreshTriviaStats', async (client, message) => {
+            console.log('refreshTriviaStats', client.sessionId);
+            const { total_count, popular_topics } = await getTriviaStats();
+            this.broadcast('triviaStats', { total_count, popular_topics });
         });
     }
 

@@ -47,14 +47,22 @@ export const getAnswer = async (questionId: string) => {
 };
 
 export const getTriviaStats = async () => {
-    const { data, error } = await supabase
+    const countResp = await supabase
         .from('trivia_questions')
-        .select('id, total_questions, total_answered');
-    if (error) {
-        throw error;
-    }
-    if (data.length === 0) {
-        return null;
-    }
-    return data[0];
+        .select('*', { count: 'exact', head: true })
+        .is('answered_on', null);
+    console.log('total questions: ', countResp.count);
+
+    const total_count = countResp.count;
+
+    const popularResp = await supabase
+        .from('topics')
+        .select('name, topic_count')
+        .order('topic_count', { ascending: true });
+
+    console.log('popular topics: ', popularResp.data);
+
+    const popular_topics = popularResp.data;
+
+    return { total_count, popular_topics };
 };
