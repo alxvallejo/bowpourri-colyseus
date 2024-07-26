@@ -9,7 +9,7 @@ export class Trivia extends Room<TriviaState> {
 
         this.onMessage('spin', async (client, message) => {
             const { email } = client.userData;
-            console.log('spin', client.sessionId);
+            console.log('spin', email);
             // Remove current player from wheel
             this.state.wheel.delete(email);
             // Broadcast wheel

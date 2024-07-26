@@ -145,7 +145,7 @@ export default function Trivia() {
                         <img src={playerScores?.answerImageUrl} />
                     )}
                 </div>
-            ) : wheel.length > 0 ? (
+            ) : wheel.length == 0 ? (
                 <p>Waiting for more players...</p>
             ) : yourTurn ? (
                 <div className='flex flex-col'>

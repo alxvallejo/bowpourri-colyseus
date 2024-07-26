@@ -246,12 +246,6 @@ export default function Layout() {
                                         Wheel
                                     </h2>
                                     <table className='table table-sm'>
-                                        {/* head */}
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             {wheel.map((player, index) => (
                                                 <tr key={index}>
@@ -267,13 +261,6 @@ export default function Layout() {
                                         Scoreboard
                                     </h2>
                                     <table className='table table-sm'>
-                                        {/* head */}
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Score</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             {players.map((player, index) => (
                                                 <tr key={index}>
@@ -290,13 +277,6 @@ export default function Layout() {
                                         Topics
                                     </h2>
                                     <table className='table table-sm'>
-                                        {/* head */}
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Count</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             {popularTopics.map(
                                                 (topic, index) => (
